@@ -29,7 +29,8 @@ contract RPCToken is ERC20, ERC20Permit {
         transfer(address(this), bet);
         Sessions[msg.sender].m_Guest = opponent;
         Sessions[msg.sender].m_Bet = bet;
-        Sessions[msg.sender].m_Action = action;
+        // Уязвимость: действие в блокчейне видно всем. Для безопасности действия необходимо шифровать.
+        Sessions[msg.sender].m_Action = action; 
     }
     // Служебные геттеры
     function getSessionBet(address target) public view returns (uint256) {
@@ -54,7 +55,7 @@ contract RPCToken is ERC20, ERC20Permit {
     function rockPaperScissors(RockPaperScissorsActions action_1, RockPaperScissorsActions action_2) internal pure returns (bool b_FirstPlayerWins) {
         return (uint(action_1) % 3 == (uint(action_2) + 1) % 3); 
     }
-    
+
     // Начало игры. Проверка готовности игроков. Посредник отправляет токены участнкам в соответствии с результатом игры.
     function startSession(address opponent) public payable returns (address) {
         // Проверки на готовность
