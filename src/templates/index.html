@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+</head>
+
+    <!-- ================================================================================= -->
+
+<body>
+    <h1>Rock Paper Scissors</h1>
+    <div>
+        <h2>Transfer tokens</h2>
+        <div>
+            <label for="TransferTokens.TokenSender"> Token Sender:</label>
+            <input type="text" id="TransferTokens.TokenSender">
+            <label for="TransferTokens.P0">Opponent 0:</label>
+            <input type="text" id="TransferTokens.P0">
+            <label for="TransferTokens.P1">Opponent 1:</label>
+            <input type="text" id="TransferTokens.P1">
+            <label for="TransferTokens.TokensToSend">Tokens To Send:</label>
+            <input type="text" id="TransferTokens.TokensToSend">
+            <button onclick="transferTokens()">Give</button>
+        </div>
+    </div>
+    <div>
+        <h2>Player 0: Invite to Session</h2>
+        <div>
+            <label for="Invite.Opponent0">Opponent:</label>
+            <input type="text" id="Invite.Opponent0">
+            <label for="Invite.Sender0">Sender:</label>
+            <input type="text" id="Invite.Sender0">
+            <label for="Invite.BetAmount0">Bet Amount (ETH):</label>
+            <input type="number" id="Invite.BetAmount0" step="1">
+            <label for="Invite.Action0">Action (0: Rock, 1: Paper, 2: Scissors):</label>
+            <input type="number" id="Invite.Action0" min="0" max="2">
+            <button onclick="inviteToSession(0)">Invite</button>
+        </div>
+    </div>
+    <div>
+        <!-- <h2>Player 1: Invite to Session</h2>
+        <div>
+            <label for="opponent1">Opponent:</label>
+            <input type="text" id="opponent1">
+            <label for="sender1">Sender:</label>
+            <input type="text" id="sender1">
+            <label for="betAmount1">Bet Amount (ETH):</label>
+            <input type="number" id="betAmount1" step="1">
+            <label for="action1">Action (0: Rock, 1: Paper, 2: Scissors):</label>
+            <input type="number" id="action1" min="0" max="2">
+            <button onclick="inviteToSession(1)">Invite</button>
+        </div> -->
+        <h2>Player 1: Invite to Session</h2>
+        <div>
+            <label for="Invite.Opponent1">Opponent:</label>
+            <input type="text" id="Invite.Opponent1">
+            <label for="Invite.Sender1">Sender:</label>
+            <input type="text" id="Invite.Sender1">
+            <label for="Invite.BetAmount1">Bet Amount (ETH):</label>
+            <input type="number" id="Invite.BetAmount1" step="1">
+            <label for="Invite.Action1">Action (0: Rock, 1: Paper, 2: Scissors):</label>
+            <input type="number" id="Invite.Action1" min="0" max="2">
+            <button onclick="inviteToSession(1)">Invite</button>
+        </div>
+    </div>
+    <div>
+        <h2>Session State</h2>
+        <label for="State.Target">Target:</label>
+        <input type="text" id="State.Target">
+        <button onclick="getSessionData()">Get</button>
+    </div>
+    <div>
+        <h2>Start Session</h2>
+        <label for="Start.Initiator">Initiator:</label>
+        <input type="text" id="Start.Initiator">
+        <label for="Start.Opponent">Opponent:</label>
+        <input type="text" id="Start.Opponent">
+        <button onclick="startSession()">Start</button>
+    </div>
+    <div>
+        <h2>Balance Of</h2>
+        <label for="Balance.Target">Target:</label>
+        <input type="text" id="Balance.Target">
+        <button onclick="balanceOf()">Get</button>
+    </div>
+    <div>
+        <h2>Cancel Session</h2>
+        <label for="Cancel.Target">Target:</label>
+        <input type="text" id="Cancel.Target">
+        <button onclick="cancelSession()">Cancel</button>
+    </div>
+
+    <!-- ================================================================================= -->
+
+    <script>
+        async function transferTokens(player) {
+            const P0 = document.getElementById(`TransferTokens.P0`).value;
+            const P1 = document.getElementById(`TransferTokens.P1`).value;
+            const TokenSender = document.getElementById(`TransferTokens.TokenSender`).value;
+            const TokensToSend = document.getElementById(`TransferTokens.TokensToSend`).value;
+            const Response = await fetch('/transferTokens', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    'P0':           P0, 
+                    'P1':           P1, 
+                    'TokenSender':  TokenSender, 
+                    'TokensToSend': TokensToSend
+                })
+            });
+        }
+        async function inviteToSession(player) {
+            const From = document.getElementById(`Invite.Sender${player}`).value;
+            const Opponent = document.getElementById(`Invite.Opponent${player}`).value;
+            const BetAmount = document.getElementById(`Invite.BetAmount${player}`).value;
+            const Action = document.getElementById(`Invite.Action${player}`).value;
+            const Response = await fetch('/inviteToSession', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    'From':         From,
+                    'Opponent':     Opponent, 
+                    'BetAmount':    BetAmount, 
+                    'Action':       Action 
+                })
+            });
+            const result = await response.json();
+            console.log(result);
+        }
+        async function getSessionData() {
+            const Target = document.getElementById(`State.Target`).value;
+            const response = await fetch('/getSessionData', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    'Target': Target
+                })
+            });
+            const Result = await response.json();
+            console.log(Result);
+        }
+        async function startSession() {
+            const Sender = document.getElementById(`Start.Initiator`).value;
+            const Opponent = document.getElementById(`Start.Opponent`).value;
+            const Response = await fetch('/startSession', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    'Opponent': Opponent, 
+                    'Sender':   Sender 
+                })
+            });
+            const Result = await response.json();
+            console.log(Result);
+        }
+
+        async function balanceOf() {
+            const Target = document.getElementById(`Balance.Target`).value;
+            const Response = await fetch('/balanceOf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    'Target':   Target
+                })
+            });
+            const Result = await response.json();
+            console.log(Result);
+        }
+        async function cancelSession() {
+            const Target = document.getElementById(`Cancel.Target`).value;
+            const Response = await fetch('/cancelSession', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    'Target':   Target 
+                })
+            });
+            const Result = await response.json();
+            console.log(Result);
+        }
+    </script>
+</body>
+</html>
