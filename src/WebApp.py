@@ -69,16 +69,16 @@ def getSessionData():
 
 @app.route('/startSession', methods=['POST'])
 def startSession():
-    data = request.json
-    print(f'\nGame started:\nP0:\t{data['Sender']}\nP1:\t{data['Opponent']}', file=sys.stderr)
     try:
-        winner = contract.functions.startSession(data['Sender']).transact({
+        data = request.json
+        print(f'\nGame started:\nP0:\t{data['Sender']}\nP1:\t{data['Opponent']}', file=sys.stderr)
+        winner = contract.functions.startSession(data['Sender']).call({
             'from': data['Opponent']
-        })
-        return jsonify({'Status': 'Started', 'Winner': winner.hex()})
+        })# .hex()
+        return jsonify({'Status': 'Started', 'Winner': winner})
     except:
         print(f'\nAn error occured. Possibly, due to the fact that the session doesn\'t exist.')
-    return jsonify({'Status': 'Failed', 'Winner': 'None'})
+        return jsonify({'Status': 'Failed', 'Winner': 'None'})
 
 @app.route('/balanceOf', methods=['POST'])
 def balanceOf():
