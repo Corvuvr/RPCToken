@@ -14,13 +14,21 @@
         <h2>Transfer tokens</h2>
         <div>
             <label for="TransferTokens.TokenSender"> Token Sender:</label>
-            <input type="text" id="TransferTokens.TokenSender">
+            <input type="text" id="TransferTokens.TokenSender"  
+                value="0x577132450e3ec5F9536574a3b8dCBb735Abf45e6">
+
             <label for="TransferTokens.P0">Opponent 0:</label>
-            <input type="text" id="TransferTokens.P0">
+            <input type="text" id="TransferTokens.P0"           
+                value="0xd31C202640A59b8FF6BEdD2f864D765a55fe3aC9">
+
             <label for="TransferTokens.P1">Opponent 1:</label>
-            <input type="text" id="TransferTokens.P1">
+            <input type="text" id="TransferTokens.P1"         
+                value="0x6C7f42b651e95e1B9cfb1322F81a656146A335f1">
+
             <label for="TransferTokens.TokensToSend">Tokens To Send:</label>
-            <input type="text" id="TransferTokens.TokensToSend">
+            <input type="text" id="TransferTokens.TokensToSend"   
+                value="10">
+
             <button onclick="transferTokens()">Give</button>
         </div>
     </div>
@@ -28,39 +36,39 @@
         <h2>Player 0: Invite to Session</h2>
         <div>
             <label for="Invite.Opponent0">Opponent:</label>
-            <input type="text" id="Invite.Opponent0">
+            <input type="text" id="Invite.Opponent0"              
+                value="0xd31C202640A59b8FF6BEdD2f864D765a55fe3aC9">
+
             <label for="Invite.Sender0">Sender:</label>
-            <input type="text" id="Invite.Sender0">
+            <input type="text" id="Invite.Sender0"                 
+                value="0x6C7f42b651e95e1B9cfb1322F81a656146A335f1">
+
             <label for="Invite.BetAmount0">Bet Amount (ETH):</label>
-            <input type="number" id="Invite.BetAmount0" step="1">
+            <input type="number" id="Invite.BetAmount0" step="1" value="1">
+
             <label for="Invite.Action0">Action (0: Rock, 1: Paper, 2: Scissors):</label>
-            <input type="number" id="Invite.Action0" min="0" max="2">
+            <input type="number" id="Invite.Action0" min="0" max="2" value="1">
+
             <button onclick="inviteToSession(0)">Invite</button>
         </div>
     </div>
     <div>
-        <!-- <h2>Player 1: Invite to Session</h2>
-        <div>
-            <label for="opponent1">Opponent:</label>
-            <input type="text" id="opponent1">
-            <label for="sender1">Sender:</label>
-            <input type="text" id="sender1">
-            <label for="betAmount1">Bet Amount (ETH):</label>
-            <input type="number" id="betAmount1" step="1">
-            <label for="action1">Action (0: Rock, 1: Paper, 2: Scissors):</label>
-            <input type="number" id="action1" min="0" max="2">
-            <button onclick="inviteToSession(1)">Invite</button>
-        </div> -->
         <h2>Player 1: Invite to Session</h2>
         <div>
             <label for="Invite.Opponent1">Opponent:</label>
-            <input type="text" id="Invite.Opponent1">
+            <input type="text" id="Invite.Opponent1"               
+                value="0x6C7f42b651e95e1B9cfb1322F81a656146A335f1">
+
             <label for="Invite.Sender1">Sender:</label>
-            <input type="text" id="Invite.Sender1">
+            <input type="text" id="Invite.Sender1"              
+                value="0xd31C202640A59b8FF6BEdD2f864D765a55fe3aC9">
+
             <label for="Invite.BetAmount1">Bet Amount (ETH):</label>
-            <input type="number" id="Invite.BetAmount1" step="1">
+            <input type="number" id="Invite.BetAmount1" step="1" value="1">
+
             <label for="Invite.Action1">Action (0: Rock, 1: Paper, 2: Scissors):</label>
-            <input type="number" id="Invite.Action1" min="0" max="2">
+            <input type="number" id="Invite.Action1" min="0" max="2" value="0">
+
             <button onclick="inviteToSession(1)">Invite</button>
         </div>
     </div>
@@ -73,15 +81,21 @@
     <div>
         <h2>Start Session</h2>
         <label for="Start.Initiator">Initiator:</label>
-        <input type="text" id="Start.Initiator">
+        <input type="text" id="Start.Initiator"
+            value="0x6C7f42b651e95e1B9cfb1322F81a656146A335f1">
+
         <label for="Start.Opponent">Opponent:</label>
-        <input type="text" id="Start.Opponent">
+        <input type="text" id="Start.Opponent"
+            value="0xd31C202640A59b8FF6BEdD2f864D765a55fe3aC9">
         <button onclick="startSession()">Start</button>
+    </div>
+    <div>
+        <textarea id="Result.TextArea" rows="2" cols="64"></textarea>
     </div>
     <div>
         <h2>Balance Of</h2>
         <label for="Balance.Target">Target:</label>
-        <input type="text" id="Balance.Target">
+        <input type="text" id="Balance.Target" value="0x6C7f42b651e95e1B9cfb1322F81a656146A335f1">
         <button onclick="balanceOf()">Get</button>
     </div>
     <div>
@@ -125,19 +139,19 @@
                     'Action':       Action 
                 })
             });
-            const result = await response.json();
+            const result = await Response.json();
             console.log(result);
         }
         async function getSessionData() {
             const Target = document.getElementById(`State.Target`).value;
-            const response = await fetch('/getSessionData', {
+            const Response = await fetch('/getSessionData', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     'Target': Target
                 })
             });
-            const Result = await response.json();
+            const Result = await Response.json();
             console.log(Result);
         }
         async function startSession() {
@@ -151,10 +165,12 @@
                     'Sender':   Sender 
                 })
             });
-            const Result = await response.json();
+            const Result = await Response.json();
+            let ResultTextBox = `The winner is:\n${Result['Winner']}`;
+            // ResultTextBox = 'asoiISISDF';
+            document.getElementById(`Result.TextArea`).innerHTML = ResultTextBox;
             console.log(Result);
         }
-
         async function balanceOf() {
             const Target = document.getElementById(`Balance.Target`).value;
             const Response = await fetch('/balanceOf', {
@@ -164,7 +180,7 @@
                     'Target':   Target
                 })
             });
-            const Result = await response.json();
+            const Result = await Response.json();
             console.log(Result);
         }
         async function cancelSession() {
@@ -176,7 +192,7 @@
                     'Target':   Target 
                 })
             });
-            const Result = await response.json();
+            const Result = await Response.json();
             console.log(Result);
         }
     </script>

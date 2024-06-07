@@ -29,62 +29,77 @@ def status():
 
 @app.route('/transferTokens', methods=['POST'])
 def transferTokens():
-    data = request.json
-    print(f'\nTransferred {int(data['TokensToSend'])} RPC token(s) to:\nP0:\t{data['P0']}\nP1:\t{data['P1']}', file=sys.stderr)
-    tx_hash = contract.functions.transfer(data['P0'], int(data['TokensToSend'])).transact({
-        'from': data['TokenSender']
-    })
-    tx_hash = contract.functions.transfer(data['P1'], int(data['TokensToSend'])).transact({
-        'from': data['TokenSender']
-    })
-    return jsonify({'txHash': tx_hash.hex()})
+    try:
+        data = request.json
+        print(f'\nTransferred {int(data['TokensToSend'])} RPC token(s) to:\nP0:\t{data['P0']}\nP1:\t{data['P1']}', file=sys.stderr)
+        tx_hash = contract.functions.transfer(data['P0'], int(data['TokensToSend'])).transact({
+            'from': data['TokenSender']
+        })
+        tx_hash = contract.functions.transfer(data['P1'], int(data['TokensToSend'])).transact({
+            'from': data['TokenSender']
+        })
+        return jsonify({'Status': tx_hash.hex()})
+    except:
+        return jsonify({'Status': 'Failed'})
 
 @app.route('/inviteToSession', methods=['POST'])
 def inviteToSession():
-    data = request.json    
-    print(f'\nSession Initiated:\nFrom:\t{data['From']}\nTo:\t{data['Opponent']}\nBet:\t{int(data['BetAmount'])}\nAction:\t{int(data['Action'])}', file=sys.stderr)
-    tx_hash = contract.functions.inviteToSession(
-        data['Opponent'],
-        int(data['BetAmount']),
-        int(data['Action'])
-    ).transact({'from': data['From']})
-    return jsonify({'txHash': tx_hash.hex()})
+    try:
+        data = request.json    
+        print(f'\nSession Initiated:\nFrom:\t{data['From']}\nTo:\t{data['Opponent']}\nBet:\t{int(data['BetAmount'])}\nAction:\t{int(data['Action'])}', file=sys.stderr)
+        contract.functions.inviteToSession(
+            data['Opponent'],
+            int(data['BetAmount']),
+            int(data['Action'])
+        ).transact({'from': data['From']})
+        return jsonify({'Status': f'Invited {data['Opponent']}'})
+    except:
+        return jsonify({'Status': 'Failed'})
 
 @app.route('/getSessionData', methods=['POST'])
 def getSessionData():
-    data = request.json
-    guest   = contract.functions.getSessionGuest(data['Target']).call()
-    bet     = contract.functions.getSessionBet(data['Target']).call()
-    print(f'\nSession state:\nTarget:\t{data['Target']}\nOp.:\t{guest}\nBet info:\t{int(bet)}', file=sys.stderr)
-    return jsonify({'guest': guest, 'bet': bet})
+    try:
+        data    = request.json
+        guest   = contract.functions.getSessionGuest(data['Target']).call()
+        bet     = contract.functions.getSessionBet(data['Target']).call()
+        print(f'\nSession state:\nTarget:\t{data['Target']}\nOp.:\t{guest}\nBet info:\t{int(bet)}', file=sys.stderr)
+        return jsonify({'Guest': guest, 'Bet': bet})
+    except:
+        return jsonify({'Guest': 'Failed to get', 'Bet': 'Failed to get'})
 
 @app.route('/startSession', methods=['POST'])
 def startSession():
     data = request.json
     print(f'\nGame started:\nP0:\t{data['Sender']}\nP1:\t{data['Opponent']}', file=sys.stderr)
     try:
-        tx_hash = contract.functions.startSession(data['Sender']).transact({
+        winner = contract.functions.startSession(data['Sender']).transact({
             'from': data['Opponent']
         })
-        return jsonify({'status': 'started', 'transactionHash': tx_hash.hex()})
+        return jsonify({'Status': 'Started', 'Winner': winner.hex()})
     except:
         print(f'\nAn error occured. Possibly, due to the fact that the session doesn\'t exist.')
-    return jsonify({'status': 'failed'})
+    return jsonify({'Status': 'Failed', 'Winner': 'None'})
 
 @app.route('/balanceOf', methods=['POST'])
 def balanceOf():
-    data = request.json
-    balance = contract.functions.balanceOf(data['Target']).call()
-    print(f'\nTarget:\t\t{data['Target']}\nBalance:\t{int(balance)}', file=sys.stderr)
-    return jsonify({'Balance': balance})
+    try:
+        data = request.json
+        balance = contract.functions.balanceOf(data['Target']).call()
+        print(f'\nTarget:\t\t{data['Target']}\nBalance:\t{int(balance)}', file=sys.stderr)
+        return jsonify({'Balance': balance})
+    except:
+        return jsonify({'Balance': 'Failed to get'})
 
 @app.route('/cancelSession', methods=['POST'])
 def cancelSession():
-    data = request.json
-    tx_hash = contract.functions.cancelSession().transact({
-        'from': data['Target']
-    })
-    return jsonify({'status': 'cancelled', 'transactionHash': tx_hash.hex()})
+    try:
+        data = request.json
+        contract.functions.cancelSession().transact({
+            'from': data['Target']
+        })
+        return jsonify({'Status': 'Session cancelled'})
+    except:
+        return jsonify({'Status': 'Cancellation failed'})
 
 if __name__ == '__main__':
     app.run(debug=True)
